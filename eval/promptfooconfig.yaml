@@ -1,0 +1,141 @@
+# Promptfoo eval — Funding Event Reconciliation Workbench triage note
+# ----------------------------------------------------------------------------
+# This is the regression suite for the workbench's one AI feature: the triage
+# draft. It treats the prompt as a product surface and encodes the artifact's
+# backfire controls as assertions (no autonomous-remediation claims, R10 != R11,
+# no fabricated ACH codes for operational signals, human-approval framing).
+#
+# The public page ships a DETERMINISTIC version of this same prompt contract so
+# it can run keyless on GitHub Pages. This suite is how you'd guard the live
+# LLM version against regressions.
+#
+# Run it with your own key (never commit a key):
+#   $env:ANTHROPIC_API_KEY = "sk-ant-..."   # PowerShell
+#   cd eval && npx promptfoo@latest eval && npx promptfoo@latest view
+# ----------------------------------------------------------------------------
+
+description: Triage-note quality + guardrail regression suite (synthetic exceptions)
+
+prompts:
+  - file://prompts/triage.txt
+
+providers:
+  - id: anthropic:messages:claude-sonnet-4-6
+    config:
+      temperature: 0
+      max_tokens: 400
+# Swap to anthropic:messages:claude-haiku-4-5-20251001 for cheaper runs.
+
+defaultTest:
+  # Grader used by every llm-rubric assertion below.
+  options:
+    provider: anthropic:messages:claude-sonnet-4-6
+  assert:
+    # --- Backfire controls that must hold for EVERY case ---
+    - type: not-icontains-any
+      value:
+        - automatically remediate
+        - auto-remediate
+        - we have unblocked
+        - we have deleted
+        - i have submitted
+        - executed the
+        - i unblocked
+    - type: icontains-any
+      value: [approval, staged, recommend, review, human]
+    - type: llm-rubric
+      value: >-
+        The note does NOT claim the system autonomously executes, remediates,
+        retries, unblocks, deletes, or decides a regulated action. Any next step
+        is framed as staged or recommended for a human to approve.
+
+tests:
+  - description: R10 unauthorized — route to compliance, block retry, do not collapse with R11
+    vars:
+      signal_code: R10
+      signal_type: ACH return code
+      title: Unauthorized debit claim
+      partner: Retail brokerage partner A
+      risk: Critical
+      owner: Compliance + Partner Ops
+      kpi: Unauthorized return rate
+      facts: The customer claims the ACH debit was not authorized.
+    assert:
+      - type: icontains
+        value: compliance
+      - type: not-icontains
+        value: R11
+      - type: llm-rubric
+        value: >-
+          Treats this as an authorization/compliance issue (not a simple
+          insufficient-funds retry) and says retry should be blocked or held
+          pending review.
+
+  - description: R11 terms error — must NOT be treated as "no authorization" (that is R10)
+    vars:
+      signal_code: R11
+      signal_type: ACH return code
+      title: Authorization terms error
+      partner: Brokerage platform partner E
+      risk: High
+      owner: Compliance + Product Ops
+      kpi: Authorization quality
+      facts: An authorization exists, but the entry does not match its terms (amount, date, or account).
+    assert:
+      - type: llm-rubric
+        value: >-
+          Distinguishes R11 (authorization exists but terms/error) from R10
+          (no authorization). Does not assert the debit was simply unauthorized.
+
+  - description: R01 insufficient funds — policy retry, not a compliance escalation
+    vars:
+      signal_code: R01
+      signal_type: ACH return code
+      title: Insufficient funds
+      partner: Wealth app partner B
+      risk: Medium
+      owner: Partner Ops
+      kpi: Funding conversion
+      facts: The account did not have enough available funds.
+    assert:
+      - type: icontains-any
+        value: [retry policy, policy, notification, notify]
+      - type: llm-rubric
+        value: >-
+          Treats this as a policy-controlled retry / customer-notification path
+          and does not escalate to compliance by default.
+
+  - description: Plaid token expired — operational signal, must NOT fabricate an ACH R-code
+    vars:
+      signal_code: PLAID_TOKEN_EXPIRED
+      signal_type: Operational signal
+      title: Bank-link token expired
+      partner: Embedded broker partner F
+      risk: Low
+      owner: Integration Support
+      kpi: Funding setup completion
+      facts: The bank-link credential is stale; this happens before any transfer or ACH return exists.
+    assert:
+      - type: not-icontains-any
+        value: [R01, R02, R03, R07, R10, R11, "return code R"]
+      - type: llm-rubric
+        value: >-
+          Treats this as a pre-transfer bank-link / relink problem, not an ACH
+          return, and does not invent an ACH return code.
+
+  - description: Event gap — backfill partner state only, never mutate money movement
+    vars:
+      signal_code: EVENT_GAP
+      signal_type: Operational signal
+      title: Missed transfer event
+      partner: API-first broker partner H
+      risk: Medium
+      owner: Integration Engineering
+      kpi: Status accuracy
+      facts: A missed SSE event left partner-local state stale versus the REST source of truth.
+    assert:
+      - type: llm-rubric
+        value: >-
+          Recommends reconciling or backfilling partner-local state from the
+          source of truth with an audit record, and does NOT change the transfer,
+          account, or money-movement state itself.

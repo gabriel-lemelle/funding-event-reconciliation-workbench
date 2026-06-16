@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Funding Event Reconciliation Workbench</title>
+    <meta name="description" content="An independent product concept: one place for partner money-movement ops to classify a funding failure, route the owner, stage a human-approved next action, and see the MTTR it affects. Synthetic data only, not affiliated with Alpaca.">
+    <meta name="color-scheme" content="dark light">
+    <meta name="theme-color" content="#050705">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="#top">
+          <span class="brand-mark" aria-hidden="true">FR</span>
+          <span class="brand-text">
+            <strong>Funding Recon</strong>
+            <small>Independent concept</small>
+          </span>
+        </a>
+
+        <nav class="side-nav" aria-label="Sections">
+          <a href="#discovery">Discovery</a>
+          <a href="#workbench">Workbench</a>
+          <a href="#metrics">Metric tree</a>
+          <a href="#taxonomy">Taxonomy</a>
+          <a href="#sources">Sources</a>
+        </nav>
+
+        <div class="sidebar-card">
+          <span class="card-label">Environment</span>
+          <strong>Sandbox</strong>
+          <p>Synthetic cases, no credentials, no live API calls.</p>
+        </div>
+      </aside>
+
+      <main id="main" class="main-panel">
+        <header id="top" class="topbar">
+          <div class="topbar-lead">
+            <p class="eyebrow">Independent product concept &middot; AI-PM discovery demo</p>
+            <h1>Funding Event Reconciliation Workbench</h1>
+            <p class="hero-lede">
+              When a funding event fails, the truth is scattered across ACH return codes, bank-link
+              state, event streams, and compliance review. This concept gives partner operations
+              <strong>one recovery surface</strong>: classify what broke, route the owner, stage a
+              human-approved next action, and show the MTTR it affects. ACH returns are one class of
+              scenario inside a broader exception-observability product.
+            </p>
+          </div>
+          <div class="topbar-actions" aria-label="Posture">
+            <span class="status-pill">Human approval on regulated actions</span>
+            <span class="status-pill muted">Synthetic data only</span>
+            <span class="status-pill muted">Not affiliated with Alpaca</span>
+          </div>
+        </header>
+
+        <!-- ============================ DISCOVERY (the AI-PM core) ============================ -->
+        <section id="discovery" class="section-card discovery" aria-labelledby="discovery-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Discovery</p>
+              <h2 id="discovery-title">The product thinking before the screens</h2>
+            </div>
+            <p>
+              A reconciliation tool is only credible if the discovery behind it is explicit. Persona,
+              ranked pain, the job-to-be-done, the opportunity tree, and the metric are stated up front,
+              then embodied in the workbench below.
+            </p>
+          </div>
+
+          <div class="discovery-grid">
+            <!-- Personas -->
+            <article class="disc-block" aria-labelledby="persona-h">
+              <h3 id="persona-h" class="disc-title">Persona</h3>
+              <div class="persona-card primary">
+                <p class="persona-rank">Primary</p>
+                <strong>Partner Money-Movement Operations Lead</strong>
+                <p>
+                  Owns recovery when funding fails. Lives across ACH return codes, transfer-status
+                  events, partner DB state, Plaid bank-link evidence, compliance review, support
+                  messaging, and MTTR reporting.
+                </p>
+                <p class="persona-constraint">
+                  <span>Constraint</span> Needs one operational truth fast &mdash; can&rsquo;t stitch six tools per incident.
+                </p>
+              </div>
+              <div class="persona-card">
+                <p class="persona-rank">Secondary</p>
+                <strong>Integration Developer</strong>
+                <p>
+                  Needs to know whether local transfer status is still aligned with the source of truth
+                  when real-time event streams disconnect or a state transition is missed.
+                </p>
+              </div>
+            </article>
+
+            <!-- Pain points -->
+            <article class="disc-block" aria-labelledby="pain-h">
+              <h3 id="pain-h" class="disc-title">Pain points <span class="disc-sub">ranked</span></h3>
+              <ol class="pain-list">
+                <li>
+                  <div class="pain-row">
+                    <strong>No single recovery truth.</strong>
+                    <span class="evidence-tag high">High confidence</span>
+                  </div>
+                  <p>When a funding event fails, &ldquo;what broke / is retry safe / who owns next / what evidence / what metric degrades&rdquo; lives across many systems.</p>
+                </li>
+                <li>
+                  <div class="pain-row">
+                    <strong>Return-code nuance is lost.</strong>
+                    <span class="evidence-tag cited">Nacha R10/R11</span>
+                  </div>
+                  <p>R10 (unauthorized) and R11 (authorization exists, terms mismatch) are not the same retry workflow. Treating them alike causes wrong actions.</p>
+                </li>
+                <li>
+                  <div class="pain-row">
+                    <strong>Event-stream gaps go silent.</strong>
+                    <span class="evidence-tag assumption">Assumption &middot; to validate</span>
+                  </div>
+                  <p>A missed SSE transfer event leaves partner state stale with no reconciliation trigger.</p>
+                </li>
+                <li>
+                  <div class="pain-row">
+                    <strong>MTTR isn&rsquo;t instrumented per failure mode.</strong>
+                    <span class="evidence-tag gap">Gap</span>
+                  </div>
+                  <p>No per-exception MTTR, owner, or KPI view, so degradation is invisible until it&rsquo;s large.</p>
+                </li>
+              </ol>
+            </article>
+
+            <!-- JTBD + RAT -->
+            <article class="disc-block" aria-labelledby="jtbd-h">
+              <h3 id="jtbd-h" class="disc-title">Job to be done</h3>
+              <blockquote class="jtbd">
+                <p>
+                  <span class="jtbd-key">When</span> a funding event fails (ACH return, missed event,
+                  instant-funding break), <span class="jtbd-key">I want</span> one place that tells me
+                  what broke, whether retry is safe, who owns the next step, what evidence is needed,
+                  what mock payload to stage, and what metric it affects,
+                  <span class="jtbd-key">so I can</span> recover fast without pretending to automate a
+                  regulated decision.
+                </p>
+              </blockquote>
+
+              <div class="rat">
+                <h4>Riskiest assumption</h4>
+                <p>
+                  That partner ops experience <em>fragmented recovery truth</em> as the top pain &mdash;
+                  not missing API primitives. The fastest way to invalidate this concept: if ops say the
+                  real gap is missing primitives, this targets the wrong layer.
+                </p>
+              </div>
+            </article>
+          </div>
+
+          <!-- Opportunity Solution Tree -->
+          <div class="ost" aria-labelledby="ost-h">
+            <div class="ost-head">
+              <h3 id="ost-h" class="disc-title">Opportunity Solution Tree</h3>
+              <p class="disc-sub-line">Each opportunity maps to something you can see working below.</p>
+            </div>
+
+            <div class="ost-root">
+              <span class="ost-root-label">Desired outcome</span>
+              Reduce MTTR on funding-failure recovery <strong>without</strong> increasing wrong-action risk
+            </div>
+
+            <ol class="ost-opps">
+              <li class="ost-opp">
+                <div class="ost-opp-head"><span class="ost-tag">O1</span> Surface the right recovery context per return code</div>
+                <ul class="ost-sols">
+                  <li>Scenario cards (R01/R03/R10/R11/SSE) carry risk, owner, KPI, runbook, and guardrail. <a class="ost-link" href="#workbench">See the Workbench</a></li>
+                </ul>
+              </li>
+              <li class="ost-opp">
+                <div class="ost-opp-head"><span class="ost-tag">O2</span> Make retry-safety an explicit, human-approved decision</div>
+                <ul class="ost-sols">
+                  <li><code>auto_execute:false</code> by default on regulated actions; the next step is a <em>staged</em> mock handoff, never an automatic one. <a class="ost-link" href="#workbench">See the case panel</a></li>
+                </ul>
+              </li>
+              <li class="ost-opp">
+                <div class="ost-opp-head"><span class="ost-tag">O3</span> Detect &amp; reconcile event-stream gaps</div>
+                <ul class="ost-sols">
+                  <li>A missed-event backfill scenario reconciles partner-local state from the REST source of truth, with an audit record. <a class="ost-link" href="#workbench">See &ldquo;Missed transfer event&rdquo;</a></li>
+                </ul>
+              </li>
+              <li class="ost-opp">
+                <div class="ost-opp-head"><span class="ost-tag">O4</span> Make degradation legible</div>
+                <ul class="ost-sols">
+                  <li>Every scenario carries a metric-tree node and an MTTR target. <a class="ost-link" href="#metrics">See the Metric tree</a></li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+        </section>
+
+        <!-- ============================ WORKBENCH (the tool) ============================ -->
+        <section id="workbench" class="workspace-card" aria-labelledby="workbench-title">
+          <div class="toolbar">
+            <div>
+              <p class="eyebrow">Workbench</p>
+              <h2 id="workbench-title">Synthetic incident queue</h2>
+              <p>Fake case instances, not live API errors. The taxonomy further down explains the generic exception types.</p>
+            </div>
+            <label class="search-box">
+              <span>Search incidents</span>
+              <input id="searchInput" type="search" placeholder="R10, Plaid, ledger&hellip;" autocomplete="off">
+            </label>
+          </div>
+
+          <!-- Operational metric strip (MTTR-led) -->
+          <dl class="metric-strip" aria-label="Synthetic operational metrics">
+            <div class="metric-tile accent">
+              <dt>Median MTTR <span class="syn">synthetic</span></dt>
+              <dd><span id="medianMttr">&mdash;</span> <small id="mttrTarget"></small></dd>
+            </div>
+            <div class="metric-tile">
+              <dt>Safe-by-policy retries</dt>
+              <dd><span id="safeByPolicy">&mdash;</span> <small>regulated actions approval-gated</small></dd>
+            </div>
+            <div class="metric-tile">
+              <dt>Reconciliation lag</dt>
+              <dd><span id="reconLag">&mdash;</span> <small>missed-event backfill</small></dd>
+            </div>
+            <div class="metric-tile">
+              <dt>Open exceptions</dt>
+              <dd><span id="openExceptions">&mdash;</span> <small id="approvalCount"></small></dd>
+            </div>
+          </dl>
+
+          <div class="filter-row" id="filterButtons" role="group" aria-label="Filter incidents by type">
+            <button class="filter-button" type="button" data-filter="all" aria-pressed="true">All</button>
+            <button class="filter-button" type="button" data-filter="ach" aria-pressed="false">ACH return</button>
+            <button class="filter-button" type="button" data-filter="bank-link" aria-pressed="false">Bank link</button>
+            <button class="filter-button" type="button" data-filter="authorization" aria-pressed="false">Authorization</button>
+            <button class="filter-button" type="button" data-filter="event-sync" aria-pressed="false">Event sync</button>
+            <button class="filter-button" type="button" data-filter="approval" aria-pressed="false">Needs approval</button>
+          </div>
+
+          <div class="queue-layout">
+            <section class="queue-table" aria-labelledby="queue-caption">
+              <p class="queue-caption" id="queue-caption">Incidents &middot; select one to inspect</p>
+              <ul class="scenario-list" id="scenarioButtons" aria-label="Synthetic incidents"></ul>
+              <p class="empty-state" id="emptyState" hidden>No exceptions match this filter.</p>
+            </section>
+
+            <aside class="case-panel" aria-labelledby="caseTitle">
+              <div class="case-header">
+                <div>
+                  <p class="label">Selected incident &middot; <span id="caseRefId"></span></p>
+                  <h3 id="caseTitle" tabindex="-1"></h3>
+                  <p class="case-rail-note" id="caseRail"></p>
+                </div>
+                <span class="risk-pill" id="caseRisk"></span>
+              </div>
+
+              <div class="signal-band">
+                <div>
+                  <span id="signalCode"></span>
+                  <small id="signalType"></small>
+                </div>
+                <div>
+                  <span id="executionMode"></span>
+                  <small id="approvalState"></small>
+                </div>
+              </div>
+
+              <div class="case-columns">
+                <div class="case-col">
+                  <p class="col-label">What happened and what to do</p>
+
+                  <article class="detail-block">
+                    <h4>Plain-English summary</h4>
+                    <p id="caseProblem"></p>
+                  </article>
+
+                  <article class="persona-box">
+                    <h4>Persona fit</h4>
+                    <strong id="primaryPersona"></strong>
+                    <small id="secondaryPersona"></small>
+                    <p id="personaWhy"></p>
+                  </article>
+
+                  <article class="detail-block">
+                    <h4>Runbook</h4>
+                    <ol id="runbook"></ol>
+                  </article>
+
+                  <article class="detail-block">
+                    <h4>Decision guardrail</h4>
+                    <p id="guardrail"></p>
+                    <p class="block-sublabel">Source basis</p>
+                    <p id="sourceNote"></p>
+                    <a class="source-link" id="sourceLink" href="#" target="_blank" rel="noreferrer noopener">
+                      Open source <span class="ext" aria-hidden="true">&#8599;</span>
+                      <span class="visually-hidden">(opens in a new tab)</span>
+                    </a>
+                    <p class="microcopy" id="sourceConfidence"></p>
+                  </article>
+                </div>
+
+                <div class="case-col">
+                  <p class="col-label">Evidence and technical handoff</p>
+
+                  <div class="meta-section">
+                    <h4>Incident facts</h4>
+                    <dl class="case-meta">
+                      <div>
+                        <dt>Partner</dt>
+                        <dd id="partnerName"></dd>
+                      </div>
+                      <div>
+                        <dt>Occurred</dt>
+                        <dd id="occurredAt"></dd>
+                      </div>
+                      <div>
+                        <dt>Transfer</dt>
+                        <dd id="transferId"></dd>
+                      </div>
+                      <div>
+                        <dt>Source</dt>
+                        <dd id="sourceSystem"></dd>
+                      </div>
+                      <div>
+                        <dt>Status</dt>
+                        <dd id="incidentStatus"></dd>
+                      </div>
+                      <div>
+                        <dt>Flow stage</dt>
+                        <dd id="flowStage"></dd>
+                      </div>
+                      <div>
+                        <dt>Metric</dt>
+                        <dd id="metricKpi"></dd>
+                      </div>
+                      <div>
+                        <dt>MTTR <span class="syn">synthetic</span></dt>
+                        <dd id="caseMttr"></dd>
+                      </div>
+                    </dl>
+                  </div>
+
+                  <article class="detail-block">
+                    <h4>Evidence attached</h4>
+                    <ul id="evidenceList"></ul>
+                  </article>
+
+                  <article class="detail-block">
+                    <h4>Event timeline</h4>
+                    <ol class="event-trace" id="eventTrace"></ol>
+                  </article>
+
+                  <article class="detail-block ai-triage">
+                    <div class="block-heading">
+                      <h4>AI triage draft</h4>
+                      <span class="ai-badge">Draft &middot; human-approved</span>
+                    </div>
+                    <p class="ai-draft" id="aiTriage"></p>
+                    <p class="microcopy">Generated from the case fields as a first-pass note. It never decides or executes &mdash; an operator edits and approves before any action.</p>
+                  </article>
+
+                  <article class="detail-block">
+                    <div class="block-heading">
+                      <h4>Mock API handoff</h4>
+                      <button class="button small" id="copyPayload" type="button">Copy JSON</button>
+                    </div>
+                    <pre id="payload" tabindex="0" aria-label="Mock API handoff payload (synthetic)"></pre>
+                    <p class="microcopy" id="copyState" role="status" aria-live="polite"></p>
+                  </article>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <!-- ============================ METRIC TREE ============================ -->
+        <section id="metrics" class="section-card" aria-labelledby="metrics-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Metric tree</p>
+              <h2 id="metrics-title">MTTR per funding-failure class is the metric that moves</h2>
+            </div>
+            <p>
+              The outcome is recovery speed without wrong actions. It decomposes into time-to-classify,
+              time-to-route, and time-to-safe-action, held in check by two guardrail metrics. All values
+              are synthetic.
+            </p>
+          </div>
+
+          <div class="metric-tree">
+            <div class="mt-north">
+              <span class="mt-label">Outcome / North Star</span>
+              <strong>MTTR per funding-failure class</strong>
+              <small>lower is better &mdash; without raising wrong-action risk</small>
+            </div>
+
+            <div class="mt-drivers">
+              <div class="mt-driver">
+                <span class="mt-kind">Input</span>
+                <strong>Time-to-classify</strong>
+                <p>Right context surfaced per code, not a generic alert.</p>
+              </div>
+              <div class="mt-driver">
+                <span class="mt-kind">Input</span>
+                <strong>Time-to-route</strong>
+                <p>Correct owner on the first hop (ops, compliance, integration).</p>
+              </div>
+              <div class="mt-driver">
+                <span class="mt-kind">Input</span>
+                <strong>Time-to-safe-action</strong>
+                <p>A staged, approved next step instead of a risky retry.</p>
+              </div>
+              <div class="mt-driver guardrail">
+                <span class="mt-kind">Guardrail</span>
+                <strong>% retries safe-by-policy</strong>
+                <p>No wrong-action incidents &mdash; regulated actions stay approval-gated.</p>
+              </div>
+              <div class="mt-driver guardrail">
+                <span class="mt-kind">Guardrail</span>
+                <strong>Reconciliation lag</strong>
+                <p>How long partner state stays stale after a missed event.</p>
+              </div>
+            </div>
+
+            <div class="mt-classes">
+              <p class="mt-classes-label">Synthetic MTTR by class <span class="syn">vs target</span></p>
+              <div id="mttrByClass" class="mt-class-grid"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================ TAXONOMY ============================ -->
+        <section id="taxonomy" class="section-card" aria-labelledby="taxonomy-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Signal taxonomy</p>
+              <h2 id="taxonomy-title">ACH return codes are one family. Operational signals are separate.</h2>
+            </div>
+            <p>
+              The idea is not to pretend every exception has a formal ACH code. It is to make the
+              difference explicit, so ops teams know when they are handling a standardized return versus a
+              bank-link, event, or ledger state issue.
+            </p>
+          </div>
+          <div id="taxonomyGroups" class="taxonomy-grid"></div>
+        </section>
+
+        <!-- ============================ SOURCES ============================ -->
+        <section id="sources" class="section-card compact" aria-labelledby="sources-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Source basis</p>
+              <h2 id="sources-title">Grounded in public docs, with synthetic cases only</h2>
+            </div>
+          </div>
+          <ul class="source-grid">
+            <li><a href="https://docs.alpaca.markets/us/docs/ach-funding" target="_blank" rel="noreferrer noopener">Alpaca ACH funding <span class="ext" aria-hidden="true">&#8599;</span><span class="visually-hidden">(opens in a new tab)</span></a></li>
+            <li><a href="https://docs.alpaca.markets/us/docs/sse-events" target="_blank" rel="noreferrer noopener">Alpaca SSE events <span class="ext" aria-hidden="true">&#8599;</span><span class="visually-hidden">(opens in a new tab)</span></a></li>
+            <li><a href="https://alpaca.markets/learn/introducing-new-filters-to-broker-api-dashboard" target="_blank" rel="noreferrer noopener">Broker dashboard filters <span class="ext" aria-hidden="true">&#8599;</span><span class="visually-hidden">(opens in a new tab)</span></a></li>
+            <li><a href="https://www.nacha.org/rules/differentiating-unauthorized-return-reasons" target="_blank" rel="noreferrer noopener">Nacha R10/R11 <span class="ext" aria-hidden="true">&#8599;</span><span class="visually-hidden">(opens in a new tab)</span></a></li>
+            <li><a href="https://developer.gs.com/docs/services/transaction-banking/ach-return-codes/" target="_blank" rel="noreferrer noopener">ACH return-code reference <span class="ext" aria-hidden="true">&#8599;</span><span class="visually-hidden">(opens in a new tab)</span></a></li>
+            <li><a href="https://plaid.com/docs/payment-initiation/" target="_blank" rel="noreferrer noopener">Plaid payment initiation <span class="ext" aria-hidden="true">&#8599;</span><span class="visually-hidden">(opens in a new tab)</span></a></li>
+          </ul>
+        </section>
+
+        <footer class="site-footer">
+          <p>
+            Independent prototype, not affiliated with Alpaca. Synthetic data only &mdash; no live API
+            calls, no credentials, no PII. The AI triage draft is a first-pass note; it never decides or
+            executes a regulated action.
+          </p>
+        </footer>
+      </main>
+    </div>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>
