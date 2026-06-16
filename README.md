@@ -15,7 +15,7 @@ product.
 - **Not an autonomous Nacha/ACH agent.** It recommends and *stages*; it never executes a
   regulated remediation. `auto_execute:false` is a product invariant on regulated actions.
 
-🔗 **Live demo:** _published via GitHub Pages — see the repository's Pages URL._
+🔗 **Live demo:** <https://gabriel-lemelle.github.io/funding-event-reconciliation-workbench/>
 
 ---
 
