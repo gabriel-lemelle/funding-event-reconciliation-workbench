@@ -20,8 +20,8 @@
         </a>
 
         <nav class="side-nav" aria-label="Sections">
-          <a href="#discovery">Discovery</a>
           <a href="#workbench">Workbench</a>
+          <a href="#discovery">Product thinking</a>
           <a href="#metrics">Metrics</a>
           <a href="#taxonomy">Taxonomy</a>
           <a href="#sources">Sources</a>
@@ -38,17 +38,31 @@
           <p class="eyebrow">Independent product concept</p>
           <h1>Funding Event Reconciliation Workbench</h1>
           <p class="hero-lede">
-            One recovery surface for partner ops when a funding event fails: classify what broke,
-            route the owner, stage a human-approved fix, and track the MTTR it moves.
+            When a bank transfer fails, operations teams need one shared answer: what broke,
+            whether retry is safe, who owns recovery, and how long it takes.
           </p>
+          <div class="hero-actions" aria-label="Project actions">
+            <a class="button primary" href="#workbench">Open the workbench</a>
+            <a class="button" href="#discovery">See the product thinking</a>
+          </div>
+          <p class="hero-owner">
+            Built by Gabriel Lemelle <span aria-hidden="true">&middot;</span>
+            <a href="https://github.com/gabriel-lemelle/funding-event-reconciliation-workbench" target="_blank" rel="noreferrer noopener">View source <span aria-hidden="true">&#8599;</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+          </p>
+          <ul class="credibility-strip" aria-label="Prototype boundaries">
+            <li>8 synthetic incidents</li>
+            <li>Human-approved actions</li>
+            <li>No credentials or live systems</li>
+          </ul>
         </header>
 
         <!-- ============================ DISCOVERY ============================ -->
-        <section id="discovery" class="section discovery" aria-labelledby="discovery-title">
-          <div class="section-head">
+        <details id="discovery" class="section discovery" aria-labelledby="discovery-title">
+          <summary class="section-head discovery-summary">
             <p class="eyebrow">Discovery</p>
             <h2 id="discovery-title">Who it&rsquo;s for, what hurts, and the bet</h2>
-          </div>
+            <span class="discovery-summary-hint">Open product thinking</span>
+          </summary>
 
           <div class="discovery-grid">
             <!-- Personas -->
@@ -57,7 +71,7 @@
               <div class="persona-card">
                 <p class="persona-rank">Primary</p>
                 <strong>Partner Money-Movement Operations Lead</strong>
-                <p>Owns recovery when funding fails. Juggles 6+ systems per incident; needs one operational truth, fast.</p>
+                <p>Hypothesized owner of recovery when funding fails; needs one operational truth, fast.</p>
               </div>
               <div class="persona-card">
                 <p class="persona-rank">Secondary</p>
@@ -71,7 +85,7 @@
               <h3 id="pain-h" class="disc-title">Ranked pain</h3>
               <ol class="pain-list">
                 <li>
-                  <div class="pain-row"><strong>No single recovery truth</strong><span class="tag">Evidenced</span></div>
+                  <div class="pain-row"><strong>No single recovery truth</strong><span class="tag tag--open">Hypothesis</span></div>
                   <p>What broke, retry-safe?, owner, evidence, metric — scattered across systems.</p>
                 </li>
                 <li>
@@ -112,7 +126,7 @@
               <li><span class="ost-tag">O4</span> Make degradation legible <a href="#metrics">metric tree</a></li>
             </ol>
           </div>
-        </section>
+        </details>
 
         <!-- ============================ WORKBENCH ============================ -->
         <section id="workbench" class="workspace-card" aria-labelledby="workbench-title">
@@ -133,15 +147,15 @@
               <dd><span id="medianMttr">&mdash;</span> <small id="mttrTarget"></small></dd>
             </div>
             <div class="metric-tile">
-              <dt>Safe-by-policy retries</dt>
-              <dd><span id="safeByPolicy">&mdash;</span> <small>regulated actions approval-gated</small></dd>
+              <dt>Human-gated actions</dt>
+              <dd><span id="safeByPolicy">&mdash;</span> <small>of policy-sensitive actions</small></dd>
             </div>
             <div class="metric-tile">
-              <dt>Reconciliation lag</dt>
-              <dd><span id="reconLag">&mdash;</span> <small>missed-event backfill</small></dd>
+              <dt>Event-backfill MTTR</dt>
+              <dd><span id="reconLag">&mdash;</span> <small>synthetic missed-event case</small></dd>
             </div>
             <div class="metric-tile">
-              <dt>Open exceptions</dt>
+              <dt>Synthetic exceptions</dt>
               <dd><span id="openExceptions">&mdash;</span> <small id="approvalCount"></small></dd>
             </div>
           </dl>
@@ -157,12 +171,12 @@
 
           <div class="queue-layout">
             <section class="queue-table" aria-labelledby="queue-caption">
-              <p class="queue-caption" id="queue-caption">Select an incident to inspect</p>
+              <p class="queue-caption" id="queue-caption" role="status" aria-live="polite">8 incidents; selected Unauthorized debit claim.</p>
               <ul class="scenario-list" id="scenarioButtons" aria-label="Synthetic incidents"></ul>
               <p class="empty-state" id="emptyState" hidden>No exceptions match this filter.</p>
             </section>
 
-            <aside class="case-panel" aria-labelledby="caseTitle">
+            <aside class="case-panel" id="casePanel" aria-labelledby="caseTitle">
               <div class="case-header">
                 <div>
                   <p class="label">Selected &middot; <span id="caseRefId"></span></p>
@@ -206,7 +220,7 @@
                     <h4>Decision guardrail</h4>
                     <p id="guardrail"></p>
                     <p id="sourceNote" class="source-note"></p>
-                    <a class="source-link" id="sourceLink" href="#" target="_blank" rel="noreferrer noopener">
+                    <a class="source-link" id="sourceLink" href="https://www.nacha.org/rules/differentiating-unauthorized-return-reasons" target="_blank" rel="noreferrer noopener">
                       Source <span class="ext" aria-hidden="true">&#8599;</span>
                       <span class="visually-hidden">(opens in a new tab)</span>
                     </a>
@@ -241,11 +255,11 @@
 
                   <article class="detail-block ai-triage">
                     <div class="block-heading">
-                      <h4>AI triage draft</h4>
-                      <span class="ai-badge">Draft &middot; human-approved</span>
+                      <h4>Simulated AI triage</h4>
+                      <span class="ai-badge">Deterministic draft &middot; human-approved</span>
                     </div>
                     <p class="ai-draft" id="aiTriage"></p>
-                    <p class="microcopy">First-pass note. A human edits and approves &mdash; it never auto-executes.</p>
+                    <p class="microcopy">Deterministic prototype output. A live-model version is eval-tested separately; a human always edits and approves.</p>
                   </article>
 
                   <article class="detail-block">
@@ -294,13 +308,13 @@
               </div>
               <div class="mt-driver guardrail">
                 <span class="mt-kind">Guardrail</span>
-                <strong>% retries safe-by-policy</strong>
-                <p>Regulated actions stay approval-gated.</p>
+                <strong>Human-gated policy actions</strong>
+                <p>Policy-sensitive actions have named approval owners.</p>
               </div>
               <div class="mt-driver guardrail">
                 <span class="mt-kind">Guardrail</span>
-                <strong>Reconciliation lag</strong>
-                <p>How long partner state stays stale.</p>
+                <strong>Event-backfill MTTR</strong>
+                <p>Modeled time to restore partner-local state.</p>
               </div>
             </div>
 

@@ -1,36 +1,37 @@
 # Testing
 
-This is a static, dependency-free site, so the test strategy is a **critical-path smoke
-checklist** plus an automated **promptfoo** suite for the one AI feature. No framework or
-build step is added — that would be disproportionate for an 8-scenario demo and would work
-against the "plain HTML/CSS/JS" scope.
+This is a static site with no runtime dependencies. The test strategy combines built-in Node
+source-contract tests, a browser critical-path checklist, and a pinned **promptfoo** suite for
+the simulated AI feature.
+
+Run the local checks with `npm test` and `node --check app.js`.
 
 ## How to run the smoke checklist
 
-Serve the page (`python -m http.server 4178`) and walk the paths below. Each was verified
-during the build via scripted DOM assertions (computed styles, contrast ratios, focus, and
-structure) — results recorded under "Verification record."
+Serve the page (`python -m http.server 4178`) and walk the paths below. The dated browser
+record below is a manual verification snapshot; it is not a substitute for a committed
+Playwright or screen-reader suite.
 
 ## Critical paths
 
 | # | Path | Expected |
 |---|---|---|
 | 1 | Page loads | Title and `<h1>` read "Funding Event Reconciliation Workbench"; no console errors; CSP active. |
-| 2 | Discovery renders | Persona, 4 ranked pain points, JTBD, riskiest assumption, and 4 OST opportunities are visible. |
-| 3 | Metric strip | Median MTTR, safe-by-policy %, reconciliation lag, and open-exception count populate (all labelled synthetic). |
+| 2 | Product thinking | The collapsed disclosure opens to persona hypotheses, 4 ranked pains, JTBD, riskiest assumption, and 4 OST opportunities. |
+| 3 | Metric strip | Median MTTR, human-gated action count, event-backfill MTTR, and synthetic-exception count populate. |
 | 4 | Metric tree | 4 per-class MTTR cards render with current vs target bars; over-target classes are visually distinct (fill + "Over target" text). |
 | 5 | Queue select | Clicking an incident updates the case panel and **moves focus to the case heading**. |
-| 6 | Filters | Each filter narrows the queue; the active filter shows `aria-pressed="true"` + a fill cue; "All" restores. |
-| 7 | Search | Typing (e.g. `R10`, `Plaid`) filters rows; no match shows the empty state. |
+| 6 | Filters | Each filter narrows the queue; the active filter shows `aria-pressed="true"` + a visible checkmark; "All" restores. |
+| 7 | Search | Typing (e.g. `R10`, `Plaid`) filters rows; no match hides stale detail and announces the empty state. |
 | 8 | Guardrail posture | Regulated cases (R10/R07/R11) show "Approval required"; the mock payload shows `auto_execute:false`. |
-| 9 | AI triage draft | A labelled "draft, human-approved" note appears for the selected case and never claims autonomous action. |
+| 9 | Simulated AI triage | A labelled deterministic, human-approved note appears and never claims autonomous action. |
 | 10 | Copy JSON | "Copy JSON" copies the payload and shows a status message. |
 | 11 | Keyboard | Tab reaches skip link → nav → filters → search → rows → case controls, each with a visible focus ring. |
 | 12 | Reduced motion | With `prefers-reduced-motion`, smooth scroll and transitions are disabled. |
 
-## Verification record (this build)
+## Verification record (2026-07-16)
 
-Checked via scripted DOM/CSSOM assertions against the running page:
+Checked with the committed source tests plus manual browser QA against the running page:
 
 - **Rendering** — 8 incident rows, 4 OST opportunities, 4 pain points, 2 taxonomy tables, AI
   triage populated; title/`<h1>` correct.

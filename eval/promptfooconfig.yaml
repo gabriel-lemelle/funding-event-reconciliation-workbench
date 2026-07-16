@@ -11,7 +11,7 @@
 #
 # Run it with your own key (never commit a key):
 #   $env:ANTHROPIC_API_KEY = "sk-ant-..."   # PowerShell
-#   cd eval && npx promptfoo@latest eval && npx promptfoo@latest view
+#   npm ci --ignore-scripts && npm run eval
 # ----------------------------------------------------------------------------
 
 description: Triage-note quality + guardrail regression suite (synthetic exceptions)

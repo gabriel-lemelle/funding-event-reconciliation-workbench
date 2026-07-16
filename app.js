@@ -569,11 +569,22 @@ const copyButton = document.querySelector("#copyPayload");
 const copyState = document.querySelector("#copyState");
 const emptyState = document.querySelector("#emptyState");
 const searchInput = document.querySelector("#searchInput");
+const casePanel = document.querySelector("#casePanel");
+const queueStatus = document.querySelector("#queue-caption");
+
+function requiresApproval(scenario) {
+  return (
+    scenario.payload.auto_execute === false &&
+    (scenario.payload.required_approval || []).length > 0
+  );
+}
 
 function filteredScenarios() {
   const query = state.query.trim().toLowerCase();
   return scenarios.filter((scenario) => {
-    const matchesFilter = state.filter === "all" || scenario.tags.includes(state.filter);
+    const matchesFilter =
+      state.filter === "all" ||
+      (state.filter === "approval" ? requiresApproval(scenario) : scenario.tags.includes(state.filter));
     const searchable = [
       scenario.label,
       scenario.title,
@@ -615,21 +626,17 @@ function renderMetricStrip() {
   const medianMttr = median(scenarios.map((s) => s.mttrMin));
   const medianTarget = median(scenarios.map((s) => s.mttrTargetMin));
 
-  // "Safe-by-policy" = of the actions that touch a regulated decision
-  // (auto_execute:false), the share that are approval-gated. By design this is 100%.
+  // Show the safety boundary directly instead of presenting it as a success rate.
   const regulated = scenarios.filter((s) => !s.payload.auto_execute);
-  const gated = regulated.filter(
-    (s) => (s.payload.required_approval || []).length > 0 || s.approval !== "Not required"
-  );
-  const safePct = regulated.length ? Math.round((gated.length / regulated.length) * 100) : 100;
+  const gated = regulated.filter(requiresApproval);
 
   const eventClass = scenarios.filter((s) => s.mttrClass === "Event-sync").map((s) => s.mttrMin);
   const reconLag = median(eventClass);
-  const approvalGated = scenarios.filter((s) => s.tags.includes("approval")).length;
+  const approvalGated = scenarios.filter(requiresApproval).length;
 
   document.querySelector("#medianMttr").textContent = `${medianMttr}m`;
   document.querySelector("#mttrTarget").textContent = `vs ${medianTarget}m target`;
-  document.querySelector("#safeByPolicy").textContent = `${safePct}%`;
+  document.querySelector("#safeByPolicy").textContent = `${gated.length}/${regulated.length}`;
   document.querySelector("#reconLag").textContent = `${reconLag}m`;
   document.querySelector("#openExceptions").textContent = String(scenarios.length);
   document.querySelector("#approvalCount").textContent = `${approvalGated} approval-gated`;
@@ -686,7 +693,7 @@ function renderMttrByClass() {
 function generateTriage(scenario, incident) {
   const approvalClause = scenario.payload.auto_execute
     ? "It is low-risk and can be staged without sign-off"
-    : `It needs ${scenario.approval.toLowerCase()} approval before any action runs`;
+    : "Approval is required before any action runs";
   const firstStep = lowerFirst(scenario.runbook[0].replace(/\.$/, ""));
   return (
     `${scenario.signalCode} on ${incident.partner} reads as ${scenario.title.toLowerCase()} ` +
@@ -696,13 +703,12 @@ function generateTriage(scenario, incident) {
   );
 }
 
-function renderButtons() {
-  const visible = filteredScenarios();
+function renderButtons(visible) {
   buttonRoot.innerHTML = "";
   emptyState.hidden = visible.length > 0;
 
-  if (!visible.some((scenario) => scenario.id === state.activeId) && visible[0]) {
-    state.activeId = visible[0].id;
+  if (!visible.some((scenario) => scenario.id === state.activeId)) {
+    state.activeId = visible[0]?.id || null;
   }
 
   visible.forEach((scenario) => {
@@ -790,12 +796,22 @@ function renderTaxonomy() {
 }
 
 function render() {
-  renderButtons();
+  const visible = filteredScenarios();
+  renderButtons(visible);
   renderMetricStrip();
 
+  if (!visible.length) {
+    casePanel.hidden = true;
+    queueStatus.textContent = "0 incidents. Adjust the search or filter to continue.";
+    return;
+  }
+
+  casePanel.hidden = false;
+
   const scenario =
-    scenarios.find((item) => item.id === state.activeId) || filteredScenarios()[0] || scenarios[0];
+    visible.find((item) => item.id === state.activeId) || visible[0];
   const incident = incidents[scenario.id];
+  queueStatus.textContent = `${visible.length} incident${visible.length === 1 ? "" : "s"}; selected ${scenario.title}.`;
 
   document.querySelectorAll(".scenario-row").forEach((button) => {
     const isActive = button.dataset.id === scenario.id;

@@ -29,12 +29,17 @@ renders a deterministic note built from the same prompt contract. This suite is 
 
 Needs your own Anthropic key. **Never commit a key** (`.env` is gitignored at the repo root).
 
+Install the lockfile before exposing a key to the process, then use the pinned local binary:
+
 ```powershell
+npm ci --ignore-scripts
 $env:ANTHROPIC_API_KEY = "sk-ant-..."   # PowerShell
-cd eval
-npx promptfoo@latest eval              # runs the suite
-npx promptfoo@latest view              # opens the results UI
+npm run eval                            # runs the suite
+npx --no-install promptfoo view         # opens the results UI
 ```
+
+Promptfoo is pinned to `0.121.19` in `package.json` and `package-lock.json`; do not replace it
+with `@latest` in a process that can read an API key.
 
 - Default model: `claude-sonnet-4-6`. Swap to `claude-haiku-4-5-20251001` in
   `promptfooconfig.yaml` for cheaper runs.

@@ -21,20 +21,20 @@ product.
 
 ## What it demonstrates
 
-**Product discovery, made explicit on the page** (not buried in code):
+**Product discovery, available in a compact disclosure on the page** (not buried in code):
 
 - **Persona** — primary *Partner Money-Movement Operations Lead*, secondary *Integration Developer*.
-- **Ranked pain points** — each tagged as evidenced vs. assumption (e.g. the R10/R11 nuance is
-  cited to Nacha; "event-stream gaps go silent" is flagged as an assumption to validate).
+- **Ranked pain points** — product hypotheses are labelled as hypotheses; the R10/R11 domain
+  distinction is grounded in the linked Nacha reference.
 - **Job-to-be-done** — the recovery JTBD stated in full.
 - **Opportunity Solution Tree** — desired outcome → four opportunities (O1–O4), each linked to
   where it is embodied in the workbench.
 - **Riskiest assumption** — stated plainly, with how it would be invalidated.
 
 **The metric that moves: MTTR per funding-failure class.**
-A metric tree decomposes it (time-to-classify, time-to-route, time-to-safe-action) with two
-guardrail metrics (% retries safe-by-policy, reconciliation lag), plus synthetic per-class
-MTTR vs target.
+A metric tree decomposes it (time-to-classify, time-to-route, time-to-safe-action). The summary
+shows the count of policy-sensitive actions with human gates and the synthetic event-backfill
+case's MTTR, rather than presenting those modeled values as observed success rates.
 
 **The workbench itself.**
 Eight synthetic incidents (R01/R03/R07/R10/R11 ACH returns + Plaid-token, bank-auth, and
@@ -43,8 +43,8 @@ source basis, evidence, event timeline, and a mock JSON handoff (`auto_execute:f
 regulated actions).
 
 **One AI feature, with rigor.**
-An **AI triage draft** generates a first-pass note for the selected case — clearly labelled
-*draft, human-approved*; it never decides or executes. The page ships a deterministic version
+The **simulated AI triage** generates a first-pass note for the selected case — clearly labelled
+*deterministic draft, human-approved*; it never decides or executes. The page ships a deterministic version
 of the prompt contract so it runs keyless. The live-LLM version is guarded by a
 [promptfoo eval](eval/README.md) that turns the backfire controls into assertions.
 
@@ -73,7 +73,7 @@ Audited statically before publishing; **no Critical/High launch blockers.**
 | **Security** | No untrusted input reaches the DOM (search filters only; nothing user-entered is rendered). No third-party scripts, fonts, or network calls. Strict `Content-Security-Policy` with no `unsafe-inline`. External links use `rel="noopener noreferrer"`. No secrets committed. Synthetic data only. |
 | **Performance** | One local HTML + CSS + JS file, no dependencies, no web fonts, no images; deferred script. Negligible payload; no render-blocking resources. |
 | **Accessibility** | Targets **WCAG 2.2 AA** — see [Accessibility](#accessibility). |
-| **Tests** | Critical-path smoke checklist + verification record in [`TESTING.md`](TESTING.md); promptfoo suite for the AI feature. |
+| **Tests** | Built-in Node source-contract tests + browser smoke record in [`TESTING.md`](TESTING.md); pinned promptfoo suite for the AI feature. |
 
 ## Accessibility
 
@@ -84,7 +84,7 @@ Built to **WCAG 2.2 AA**:
   an incident moves focus to the case heading).
 - Real `<table>` semantics for the taxonomy (`scope` row/column headers + caption).
 - `aria-pressed` filters, `aria-current` queue rows, skip link, labelled new-tab links.
-- Non-text contrast ≥ 3:1 on inputs and active states; active filter uses a fill + weight cue,
+- Non-text contrast ≥ 3:1 on inputs and active states; active filter uses a fill + checkmark cue,
   not colour alone (1.4.1).
 - Honors `prefers-reduced-motion`.
 
@@ -115,7 +115,9 @@ Alpaca endpoint is accurate):
 ```
 index.html     # page shell + Discovery, Workbench, Metric tree, Taxonomy, Sources
 styles.css     # design tokens + component styles
-app.js         # synthetic scenarios + rendering, metric computation, AI triage draft
+app.js         # synthetic scenarios + rendering, metric computation, simulated triage draft
 eval/          # promptfoo guardrail suite for the AI feature (needs your own key)
+tests/         # zero-runtime-dependency source-contract tests
+package.json   # test scripts + exact eval-tool pin (not shipped to the page)
 TESTING.md     # critical-path smoke checklist + verification record
 ```

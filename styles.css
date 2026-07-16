@@ -53,6 +53,8 @@ html {
 
 body {
   margin: 0;
+  min-width: 0;
+  overflow-x: hidden;
   background: var(--bg);
   color: var(--text);
   font-family: var(--sans);
@@ -126,6 +128,8 @@ p {
 .app-shell {
   display: grid;
   grid-template-columns: 15.5rem minmax(0, 1fr);
+  min-width: 0;
+  width: 100%;
   min-height: 100vh;
 }
 
@@ -139,6 +143,7 @@ p {
   padding: 1.4rem 1.25rem;
   border-right: 1px solid var(--line);
   background: var(--surface-inset);
+  min-width: 0;
 }
 
 .brand {
@@ -162,6 +167,8 @@ p {
 .side-nav {
   display: grid;
   gap: 0.15rem;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .side-nav a {
@@ -193,6 +200,7 @@ p {
 
 .main-panel {
   width: min(100%, 1180px);
+  min-width: 0;
   margin: 0 auto;
   padding: 2.4rem 1.75rem 3rem;
 }
@@ -217,6 +225,41 @@ h1 {
   margin: 0;
   color: var(--muted);
   font-size: 1.05rem;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1.25rem;
+}
+
+.hero-owner {
+  margin: 1rem 0 0;
+  color: var(--muted-2);
+  font-size: 0.82rem;
+}
+
+.hero-owner a {
+  color: var(--muted);
+  text-underline-offset: 0.2em;
+}
+
+.credibility-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.2rem;
+  margin: 1.1rem 0 0;
+  padding: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  list-style: none;
+}
+
+.credibility-strip li::before {
+  content: "✓";
+  margin-right: 0.4rem;
+  color: var(--accent);
 }
 
 /* ============================================================
@@ -438,6 +481,7 @@ h4 {
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   background: var(--surface);
+  min-width: 0;
 }
 
 .toolbar {
@@ -558,16 +602,60 @@ h4 {
   color: var(--text);
 }
 
+.discovery-summary {
+  position: relative;
+  cursor: pointer;
+  list-style: none;
+}
+
+.discovery-summary::-webkit-details-marker {
+  display: none;
+}
+
+.discovery-summary::after {
+  content: "+";
+  position: absolute;
+  right: 0;
+  top: 0.15rem;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 1.25rem;
+}
+
+.discovery[open] .discovery-summary::after {
+  content: "−";
+}
+
+.discovery-summary-hint {
+  display: block;
+  margin-top: 0.45rem;
+  color: var(--muted-2);
+  font-size: 0.78rem;
+}
+
+.discovery[open] .discovery-summary-hint {
+  display: none;
+}
+
+.filter-button[aria-pressed="true"]::before {
+  content: "✓";
+  margin-right: 0.35rem;
+  color: var(--accent);
+}
+
 /* Queue + detail */
 .queue-layout {
   display: grid;
   grid-template-columns: minmax(14rem, 17rem) minmax(0, 1fr);
   gap: 1.25rem;
   align-items: start;
+  min-width: 0;
 }
 
 .queue-table {
   overflow: hidden;
+  min-width: 0;
+  max-width: 100%;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   background: var(--surface-inset);
@@ -583,6 +671,8 @@ h4 {
 
 .scenario-list {
   display: grid;
+  min-width: 0;
+  max-width: 100%;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -599,6 +689,8 @@ h4 {
   color: var(--muted);
   text-align: left;
   cursor: pointer;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .scenario-list li:last-child .scenario-row {
@@ -621,12 +713,15 @@ h4 {
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
+  min-width: 0;
 }
 
 .row-title {
   color: var(--text);
   font-size: 0.9rem;
   line-height: 1.25;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .row-signal {
@@ -657,6 +752,7 @@ h4 {
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   background: var(--surface-deep);
+  min-width: 0;
 }
 
 .case-header {
@@ -666,6 +762,10 @@ h4 {
   gap: 0.75rem;
   padding: 1rem;
   border-bottom: 1px solid var(--line);
+}
+
+.case-header > div {
+  min-width: 0;
 }
 
 .case-header .label {
@@ -681,6 +781,7 @@ h4 {
 .case-header h3 {
   margin: 0.3rem 0 0;
   font-size: 1.2rem;
+  overflow-wrap: anywhere;
 }
 
 .case-header h3:focus-visible {
@@ -778,6 +879,20 @@ h4 {
   gap: 1.1rem;
   align-content: start;
   min-width: 0;
+}
+
+.meta-section,
+.case-meta,
+.case-meta div,
+.detail-block,
+.block-heading,
+.case-panel pre {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.case-panel pre {
+  overflow-x: auto;
 }
 
 .detail-block p {
@@ -932,7 +1047,9 @@ h4 {
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  white-space: nowrap;
+  max-width: 100%;
+  text-align: right;
+  white-space: normal;
 }
 
 .microcopy {
@@ -967,6 +1084,17 @@ h4 {
 .source-grid a:hover,
 .button:hover {
   border-color: var(--accent);
+}
+
+.button.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #04221a;
+  font-weight: 700;
+}
+
+.button.primary:hover {
+  background: var(--accent-soft);
 }
 
 .button.small {
@@ -1388,7 +1516,7 @@ main > section[id],
    ============================================================ */
 @media (max-width: 1080px) {
   .app-shell {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .sidebar {
@@ -1401,11 +1529,15 @@ main > section[id],
     height: auto;
     border-right: 0;
     border-bottom: 1px solid var(--line);
+    min-width: 0;
+    width: 100%;
   }
 
   .side-nav {
     display: flex;
     flex-wrap: wrap;
+    min-width: 0;
+    width: 100%;
   }
 
   .sidebar-card {
@@ -1414,6 +1546,7 @@ main > section[id],
 
   .main-panel {
     padding: 1.75rem 1.25rem 2.5rem;
+    min-width: 0;
   }
 
   .discovery-grid,
@@ -1443,6 +1576,16 @@ main > section[id],
 }
 
 @media (max-width: 520px) {
+  .hero-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .hero-actions .button {
+    justify-content: center;
+    width: 100%;
+  }
+
   .metric-strip,
   .mt-class-grid,
   .mt-drivers,

@@ -1,0 +1,12 @@
+{
+  "name": "funding-event-reconciliation-workbench",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "eval": "promptfoo eval --config eval/promptfooconfig.yaml"
+  },
+  "devDependencies": {
+    "promptfoo": "0.121.19"
+  }
+}
